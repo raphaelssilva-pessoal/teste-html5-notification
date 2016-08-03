@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="notificarApp">
+<head>
+	<script src="node_modules/angular/angular.js" type="text/javascript"></script>
+	<script>
+		angular.module("notificarApp", []);
+		angular.module("notificarApp").controller("notificacaoCtrl", function($scope, $timeout){
+			$scope.notificar = function(){
+				if(!$scope.mensagem){
+					alert("mensagem não pode ser nula.")
+				}else if(!$scope.time){
+					alert("time não pode ser nula.")
+				}else
+			// Let's check if the browser supports notifications
+			  if (!("Notification" in window)) {
+			    alert("This browser does not support desktop notification");
+			  }
+
+			  // Let's check whether notification permissions have already been granted
+			  else if (Notification.permission === "granted") {
+			  	console.log($scope.time)
+
+
+			    // If it's okay let's create a notification
+			    $scope.criarNotificacao($scope.time, $scope.mensagem)
+			  }
+
+			  // Otherwise, we need to ask the user for permission
+			  else if (Notification.permission !== 'denied') {
+			    Notification.requestPermission(function (permission) {
+			    	console.log(permission)
+			      // If the user accepts, let's create a notification
+
+			      if (permission === "granted") {
+
+			        $scope.criarNotificacao($scope.time, $scope.mensagem)
+			      }
+			    });
+			  }
+
+			  // At last, if the user has denied notifications, and you 
+			  // want to be respectful there is no need to bother them any more.
+		
+		}
+		$scope.criarNotificacao = function(time, mensagem){
+			var now = new Date();
+			var milesegundos = time.getTime() - now.getTime()
+			$timeout(function(){
+				var notification = new Notification(mensagem);
+			}, milesegundos);
+		}
+		}
+		
+		)
+	</script>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+	<div ng-controller="notificacaoCtrl">
+		<input type="text" name="mensagem" ng-model="mensagem">		
+		<input type="datetime-local" ng-model="time">
+		<button type="button" ng-click="notificar()">Notificar</button>
+	</div>
+</body>
+</html>
